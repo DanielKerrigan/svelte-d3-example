@@ -2,14 +2,18 @@
 	import * as d3 from 'd3';
 	import Axis from './Axis.svelte';
 
-	let { dataset, feature, selectedIndices, color } = $props();
-
-	// dimensions
-
-	let width = $state(400);
-	let height = $state(400);
-
-	const margin = { top: 25, right: 20, bottom: 50, left: 60 };
+	let {
+		dataset,
+		width,
+		height,
+		marginLeft,
+		marginTop,
+		marginRight,
+		marginBottom,
+		feature,
+		selectedIndices,
+		color
+	} = $props();
 
 	// filter the dataset by index
 	const filteredDataset = $derived(selectedIndices.map((i) => dataset[i]));
@@ -32,47 +36,38 @@
 			.scaleLinear()
 			.domain([0, maxCount])
 			.nice()
-			.range([margin.left, width - margin.right])
+			.range([marginLeft, width - marginRight])
 	);
 
 	const y = $derived(
 		d3
 			.scaleBand()
 			.domain(color.domain())
-			.range([margin.top, height - margin.bottom])
+			.range([marginTop, height - marginBottom])
 			.padding(0.1)
 	);
 </script>
 
-<div class="barchart" bind:clientWidth={width} bind:clientHeight={height}>
-	<svg {height} {width}>
-		<!-- bars -->
-		<g>
-			{#each counts as [category, count] (category)}
-				<rect
-					x={x(0)}
-					y={y(category)}
-					height={y.bandwidth()}
-					width={x(count) - x(0)}
-					fill={color(category)}
-				/>
-			{/each}
-		</g>
+<svg {height} {width}>
+	<!-- bars -->
+	<g>
+		{#each counts as [category, count] (category)}
+			<rect
+				x={x(0)}
+				y={y(category)}
+				height={y.bandwidth()}
+				width={x(count) - x(0)}
+				fill={color(category)}
+			/>
+		{/each}
+	</g>
 
-		<!-- axes -->
-		<Axis orientation="bottom" scale={x} {width} {height} {margin} label={'Count'} />
-		<Axis orientation="left" scale={y} {width} {height} {margin} />
-	</svg>
-</div>
+	<!-- axes -->
+	<Axis orientation="bottom" scale={x} {width} {height} {marginLeft} {marginBottom} label="Count" />
+	<Axis orientation="left" scale={y} {width} {height} {marginLeft} {marginBottom} />
+</svg>
 
 <style>
-	.barchart {
-		/* take up extra horizontal space in the parent */
-		flex: 1;
-		/* be as tall as the parent div */
-		height: 100%;
-	}
-
 	/* animate changes to the lengths of the bars */
 	rect {
 		transition: width 250ms;

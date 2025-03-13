@@ -4,7 +4,7 @@
 
 <div class="swatches">
 	<!-- for each category in our scale -->
-	{#each color.domain() as d}
+	{#each color.domain() as d (d)}
 		<div class="swatch">
 			<!-- colored square -->
 			<div class="square" style:background-color={color(d)}></div>

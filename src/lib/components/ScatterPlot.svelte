@@ -2,14 +2,21 @@
 	import * as d3 from 'd3';
 	import Axis from './Axis.svelte';
 
-	let { dataset, xFeature, yFeature, colorFeature, color, highlightedPlayer, onbrush } = $props();
-
-	// dimensions
-
-	let width = $state(400);
-	let height = $state(400);
-
-	const margin = { top: 35, right: 20, bottom: 50, left: 60 };
+	let {
+		dataset,
+		width,
+		height,
+		marginLeft,
+		marginTop,
+		marginRight,
+		marginBottom,
+		xFeature,
+		yFeature,
+		colorFeature,
+		color,
+		highlightedPlayer,
+		onbrush
+	} = $props();
 
 	// scales
 
@@ -18,7 +25,7 @@
 			.scaleLinear()
 			.domain(d3.extent(dataset, (d) => d[xFeature]))
 			.nice()
-			.range([margin.left, width - margin.right])
+			.range([marginLeft, width - marginRight])
 	);
 
 	const y = $derived(
@@ -26,7 +33,7 @@
 			.scaleLinear()
 			.domain(d3.extent(dataset, (d) => d[yFeature]))
 			.nice()
-			.range([height - margin.bottom, margin.top])
+			.range([height - marginBottom, marginTop])
 	);
 
 	// brushing
@@ -58,8 +65,8 @@
 		d3
 			.brush()
 			.extent([
-				[margin.left, margin.top],
-				[width - margin.right, height - margin.bottom]
+				[marginLeft, marginTop],
+				[width - marginRight, height - marginBottom]
 			])
 			.on('start brush end', brushed)
 	);
@@ -72,41 +79,48 @@
 	});
 </script>
 
-<div class="scatterplot" bind:clientWidth={width} bind:clientHeight={height}>
-	<svg {height} {width} bind:this={svg}>
-		<!-- circles -->
-		<g>
-			{#each dataset as d}
-				<circle cx={x(d[xFeature])} cy={y(d[yFeature])} fill={color(d[colorFeature])} r={3} />
-			{/each}
+<svg {height} {width} bind:this={svg}>
+	<!-- circles -->
+	<g>
+		{#each dataset as d (d.player_id)}
+			<circle cx={x(d[xFeature])} cy={y(d[yFeature])} fill={color(d[colorFeature])} r={3} />
+		{/each}
 
-			<!-- redraw circle for the highlighted player so that it appears on top -->
-			{#if highlightedPlayer}
-				<circle
-					cx={x(highlightedPlayer[xFeature])}
-					cy={y(highlightedPlayer[yFeature])}
-					fill={color(highlightedPlayer[colorFeature])}
-					r={6}
-					stroke={'black'}
-					stroke-width={2}
-				/>
-			{/if}
-		</g>
+		<!-- redraw circle for the highlighted player so that it appears on top -->
+		{#if highlightedPlayer}
+			<circle
+				cx={x(highlightedPlayer[xFeature])}
+				cy={y(highlightedPlayer[yFeature])}
+				fill={color(highlightedPlayer[colorFeature])}
+				r={6}
+				stroke="black"
+				stroke-width={2}
+			/>
+		{/if}
+	</g>
 
-		<!-- axes -->
-		<Axis orientation="bottom" scale={x} {width} {height} {margin} label={xFeature} />
-		<Axis orientation="left" scale={y} {width} {height} {margin} label={yFeature} />
-	</svg>
-</div>
+	<!-- axes -->
+	<Axis
+		orientation="bottom"
+		scale={x}
+		{width}
+		{height}
+		{marginLeft}
+		{marginBottom}
+		label={xFeature}
+	/>
+	<Axis
+		orientation="left"
+		scale={y}
+		{width}
+		{height}
+		{marginLeft}
+		{marginBottom}
+		label={yFeature}
+	/>
+</svg>
 
 <style>
-	.scatterplot {
-		/* take up extra horizontal space in the parent */
-		flex: 1;
-		/* be as tall as the parent div */
-		height: 100%;
-	}
-
 	/* animate circles to their new location */
 	circle {
 		transition:

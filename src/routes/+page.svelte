@@ -15,6 +15,11 @@
 	let yFeature = $state('hit');
 	let colorFeature = $state('all_star');
 
+	// dimensions
+	let width = $state(400);
+	let height = $state(400);
+	const size = $derived(Math.min(width, height));
+
 	// indices of the brushed data points in the scatter plot
 	let selectedIndices = $state([]);
 
@@ -59,17 +64,41 @@
 		<ColorLegend {color} {colorFeature} />
 	</div>
 	<div class="main">
-		<PlayerList dataset={data.dataset} {selectedIndices} {onhover} />
-		<ScatterPlot
-			dataset={data.dataset}
-			{xFeature}
-			{yFeature}
-			{colorFeature}
-			{color}
-			{highlightedPlayer}
-			{onbrush}
-		/>
-		<BarChart dataset={data.dataset} feature={colorFeature} {selectedIndices} {color} />
+		<div class="player-list">
+			<PlayerList dataset={data.dataset} {selectedIndices} {onhover} />
+		</div>
+		<div class="scatter-plot" bind:clientWidth={width} bind:clientHeight={height}>
+			<ScatterPlot
+				dataset={data.dataset}
+				width={size}
+				height={size}
+				marginLeft={64}
+				marginTop={32}
+				marginRight={32}
+				marginBottom={64}
+				{xFeature}
+				{yFeature}
+				{colorFeature}
+				{color}
+				{highlightedPlayer}
+				{onbrush}
+			/>
+		</div>
+
+		<div class="bar-chart">
+			<BarChart
+				dataset={data.dataset}
+				width={size}
+				height={size}
+				marginLeft={64}
+				marginTop={32}
+				marginRight={32}
+				marginBottom={64}
+				feature={colorFeature}
+				{selectedIndices}
+				{color}
+			/>
+		</div>
 	</div>
 </div>
 
@@ -105,5 +134,17 @@
 		display: flex;
 		/* add space between them */
 		gap: 2em;
+	}
+
+	.scatter-plot,
+	.bar-chart {
+		/* take up half of the available horizontal space in main*/
+		flex: 1;
+		/* be as tall as main */
+		height: 100%;
+		/* center chart in div */
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 </style>

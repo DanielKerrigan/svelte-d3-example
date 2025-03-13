@@ -1,7 +1,5 @@
 <script>
-	import { fade } from 'svelte/transition';
-
-	let { orientation, margin, width, height, scale, label = '' } = $props();
+	let { orientation, marginLeft, marginBottom, width, height, scale, label = '' } = $props();
 
 	// band scales don't have a ticks function. so if it's
 	// a band scale, we will use the domain as the ticks
@@ -12,39 +10,36 @@
 	const offset = $derived(scale.bandwidth ? scale.bandwidth() / 2 : 0);
 </script>
 
-<!-- whenever the scale changes, fade the axis out and in -->
-{#key scale}
-	<g transition:fade={{ duration: 250 }}>
-		{#if orientation === 'left'}
-			<g transform="translate({margin.left})">
-				{#each ticks as tick}
-					<g transform="translate(0,{scale(tick) + offset})">
-						<line x2={-6} stroke="black" />
-						<text text-anchor="end" dominant-baseline="middle" fill="black" x={-10}>{tick}</text>
-					</g>
-				{/each}
+<g>
+	{#if orientation === 'left'}
+		<g transform="translate({marginLeft})">
+			{#each ticks as tick (tick)}
+				<g transform="translate(0,{scale(tick) + offset})">
+					<line x2={-6} stroke="black" />
+					<text text-anchor="end" dominant-baseline="middle" fill="black" x={-10}>{tick}</text>
+				</g>
+			{/each}
 
-				{#if label}
-					<text text-anchor="start" dominant-baseline="hanging" fill="black" x={-margin.left} y={0}>
-						{label}
-					</text>
-				{/if}
-			</g>
-		{:else}
-			<g transform="translate(0,{height - margin.bottom})">
-				{#each ticks as tick}
-					<g transform="translate({scale(tick) + offset})">
-						<line y2={6} stroke="black" />
-						<text text-anchor="middle" dominant-baseline="hanging" fill="black" y={10}>{tick}</text>
-					</g>
-				{/each}
+			{#if label}
+				<text text-anchor="start" dominant-baseline="hanging" fill="black" x={-marginLeft} y={0}>
+					{label}
+				</text>
+			{/if}
+		</g>
+	{:else}
+		<g transform="translate(0,{height - marginBottom})">
+			{#each ticks as tick (tick)}
+				<g transform="translate({scale(tick) + offset})">
+					<line y2={6} stroke="black" />
+					<text text-anchor="middle" dominant-baseline="hanging" fill="black" y={10}>{tick}</text>
+				</g>
+			{/each}
 
-				{#if label}
-					<text text-anchor="end" dominant-baseline="hanging" fill="black" x={width} y={30}>
-						{label}
-					</text>
-				{/if}
-			</g>
-		{/if}
-	</g>
-{/key}
+			{#if label}
+				<text text-anchor="end" dominant-baseline="hanging" fill="black" x={width} y={30}>
+					{label}
+				</text>
+			{/if}
+		</g>
+	{/if}
+</g>

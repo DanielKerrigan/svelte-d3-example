@@ -29,21 +29,21 @@
 	<FeatureSelect
 		value={xFeature}
 		options={axisColumns}
-		label={'X-axis'}
+		label="X-axis"
 		onchange={onChangeXFeature}
 	/>
 
 	<FeatureSelect
 		value={yFeature}
 		options={axisColumns}
-		label={'Y-axis'}
+		label="Y-axis"
 		onchange={onChangeYFeature}
 	/>
 
 	<FeatureSelect
 		value={colorFeature}
 		options={colorColumns}
-		label={'Color'}
+		label="Color"
 		onchange={onChangeColorFeature}
 	/>
 </div>

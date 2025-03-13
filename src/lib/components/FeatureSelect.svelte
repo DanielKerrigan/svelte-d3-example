@@ -5,7 +5,7 @@
 <div>
 	<div>{label}</div>
 	<select {value} onchange={(event) => onchange(event.target.value)}>
-		{#each options as opt}
+		{#each options as opt (opt)}
 			<option>{opt}</option>
 		{/each}
 	</select>
