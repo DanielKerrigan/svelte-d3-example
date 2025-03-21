@@ -12,7 +12,9 @@
 		marginBottom,
 		xFeature,
 		yFeature,
-		colorFeature
+		colorFeature,
+		color,
+		highlightedPlayer
 	} = $props();
 
 	const x = $derived(
@@ -30,13 +32,6 @@
 			.nice()
 			.range([height - marginBottom, marginTop])
 	);
-
-	const color = $derived(
-		d3
-			.scaleOrdinal()
-			.domain(new Set(dataset.map((d) => d[colorFeature])))
-			.range(d3.schemeCategory10)
-	);
 </script>
 
 <svg {width} {height}>
@@ -44,6 +39,17 @@
 		{#each dataset as d (d.player_id)}
 			<circle cx={x(d[xFeature])} cy={y(d[yFeature])} fill={color(d[colorFeature])} r={3} />
 		{/each}
+
+		{#if highlightedPlayer}
+			<circle
+				cx={x(highlightedPlayer[xFeature])}
+				cy={y(highlightedPlayer[yFeature])}
+				fill={color(highlightedPlayer[colorFeature])}
+				r={6}
+				stroke="black"
+				stroke-width={2}
+			/>
+		{/if}
 	</g>
 
 	<Axis
@@ -68,4 +74,9 @@
 </svg>
 
 <style>
+	circle {
+		transition:
+			cx 250ms,
+			cy 250ms;
+	}
 </style>

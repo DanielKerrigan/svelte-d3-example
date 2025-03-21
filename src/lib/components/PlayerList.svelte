@@ -1,10 +1,17 @@
 <script>
-	let { dataset } = $props();
+	let { dataset, onHoverPlayer } = $props();
 </script>
 
 <ul>
 	{#each dataset as player (player.player_id)}
-		<li>{player.name} ({player.team})</li>
+		<li
+			onmouseover={() => onHoverPlayer(player)}
+			onmouseleave={() => onHoverPlayer(null)}
+			onfocus={() => onHoverPlayer(player)}
+			onfocusout={() => onHoverPlayer(null)}
+		>
+			{player.name} ({player.team})
+		</li>
 	{/each}
 </ul>
 
@@ -19,5 +26,9 @@
 
 	li + li {
 		margin-top: 0.5em;
+	}
+
+	li:hover {
+		background-color: #dddddd;
 	}
 </style>
