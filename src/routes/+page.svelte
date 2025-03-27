@@ -6,6 +6,7 @@
 	import BarChart from '$lib/components/BarChart.svelte';
 	import PlayerList from '$lib/components/PlayerList.svelte';
 	import ColorLegend from '$lib/components/ColorLegend.svelte';
+	import RainCloudPlot from '$lib/components/RainCloudPlot.svelte';
 
 	// data comes from the load function in +page.js
 	let { data } = $props();
@@ -98,6 +99,21 @@
 				{color}
 			/>
 		</div>
+
+		<div class="rain-cloud-plot">
+			<RainCloudPlot
+				dataset={data.dataset}
+				width={size}
+				height={size}
+				marginLeft={64}
+				marginTop={32}
+				marginRight={32}
+				marginBottom={64}
+				{xFeature}
+				{colorFeature}
+				{color}
+			/>
+		</div>
 	</div>
 </div>
 
@@ -136,7 +152,8 @@
 	}
 
 	.scatter-plot,
-	.bar-chart {
+	.bar-chart,
+	.rain-cloud-plot {
 		/* take up half of the available horizontal space in main*/
 		flex: 1;
 		/* be as tall as main */
