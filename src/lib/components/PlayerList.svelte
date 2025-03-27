@@ -1,15 +1,13 @@
 <script>
 	import * as d3 from 'd3';
 
-	let { dataset, selectedIndices, onhover } = $props();
+	let { dataset, onhover } = $props();
 
-	const players = $derived(
-		selectedIndices.map((i) => dataset[i]).sort((a, b) => d3.ascending(a.name, b.name))
-	);
+	const sortedPlayers = $derived(dataset.toSorted((a, b) => d3.ascending(a.name, b.name)));
 </script>
 
 <ul>
-	{#each players as player (player.name)}
+	{#each sortedPlayers as player (player.name)}
 		<li
 			onmouseover={() => onhover(player)}
 			onmouseleave={() => onhover(null)}

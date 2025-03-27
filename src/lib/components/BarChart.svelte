@@ -2,26 +2,13 @@
 	import * as d3 from 'd3';
 	import Axis from './Axis.svelte';
 
-	let {
-		dataset,
-		width,
-		height,
-		marginLeft,
-		marginTop,
-		marginRight,
-		marginBottom,
-		feature,
-		selectedIndices,
-		color
-	} = $props();
-
-	// filter the dataset by index
-	const filteredDataset = $derived(selectedIndices.map((i) => dataset[i]));
+	let { dataset, width, height, marginLeft, marginTop, marginRight, marginBottom, feature, color } =
+		$props();
 
 	// get the counts for the filtered dataset
 	const counts = $derived(
 		d3.rollup(
-			filteredDataset,
+			dataset,
 			(g) => g.length,
 			(d) => d[feature]
 		)

@@ -41,23 +41,22 @@
 
 	let svg;
 
+	let brushedPlayerIDs = $state(null);
+
 	function brushed(event) {
 		if (event.selection) {
-			const [[x1, y1], [x2, y2]] = event.selection;
-			const indices = dataset
-				// get the original indices of the data points
-				.map((d, i) => [d, i])
-				// filter to get the points in the brush
-				.filter(([d]) => {
-					const dx = x(d[xFeature]);
-					const dy = y(d[yFeature]);
-					return dx >= x1 && dx <= x2 && dy >= y1 && dy <= y2;
-				})
-				// get the indices
-				.map(([, i]) => i);
-			onbrush(indices);
+			const [[x0, y0], [x1, y1]] = event.selection;
+			// filter to get the points in the brush
+			const brushedDataPoints = dataset.filter((d) => {
+				const dx = x(d[xFeature]);
+				const dy = y(d[yFeature]);
+				return dx >= x0 && dx <= x1 && dy >= y0 && dy <= y1;
+			});
+			brushedPlayerIDs = brushedDataPoints.map((d) => d.player_id);
+			onbrush(brushedDataPoints);
 		} else {
-			onbrush(d3.range(dataset.length));
+			brushedPlayerIDs = null;
+			onbrush(dataset);
 		}
 	}
 
@@ -83,7 +82,14 @@
 	<!-- circles -->
 	<g>
 		{#each dataset as d (d.player_id)}
-			<circle cx={x(d[xFeature])} cy={y(d[yFeature])} fill={color(d[colorFeature])} r={3} />
+			<circle
+				cx={x(d[xFeature])}
+				cy={y(d[yFeature])}
+				fill={brushedPlayerIDs === null || brushedPlayerIDs.includes(d.player_id)
+					? color(d[colorFeature])
+					: '#d3d3d3'}
+				r={3}
+			/>
 		{/each}
 
 		<!-- redraw circle for the highlighted player so that it appears on top -->

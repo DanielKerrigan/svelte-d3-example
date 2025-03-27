@@ -20,12 +20,12 @@
 	let height = $state(400);
 	const size = $derived(Math.min(width, height));
 
-	// indices of the brushed data points in the scatter plot
-	let selectedIndices = $state([]);
+	// brushed data points in the scatter plot
+	let filteredDataset = $state([]);
 
-	// callback function to update selectedIndices when the scatterplot is brushed
-	function onbrush(indices) {
-		selectedIndices = indices;
+	// callback function to update filteredDataset when the scatterplot is brushed
+	function onbrush(brushedDataPoints) {
+		filteredDataset = brushedDataPoints;
 	}
 
 	// data point that is highlighted in the list
@@ -65,7 +65,7 @@
 	</div>
 	<div class="main">
 		<div class="player-list">
-			<PlayerList dataset={data.dataset} {selectedIndices} {onhover} />
+			<PlayerList dataset={filteredDataset} {onhover} />
 		</div>
 		<div class="scatter-plot" bind:clientWidth={width} bind:clientHeight={height}>
 			<ScatterPlot
@@ -87,7 +87,7 @@
 
 		<div class="bar-chart">
 			<BarChart
-				dataset={data.dataset}
+				dataset={filteredDataset}
 				width={size}
 				height={size}
 				marginLeft={64}
@@ -95,7 +95,6 @@
 				marginRight={32}
 				marginBottom={64}
 				feature={colorFeature}
-				{selectedIndices}
 				{color}
 			/>
 		</div>
