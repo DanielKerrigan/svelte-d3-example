@@ -2,6 +2,7 @@
 	import './style.css';
 	import PlayerList from '$lib/components/PlayerList.svelte';
 	import ScatterPlot from '$lib/components/ScatterPlot.svelte';
+	import RainCloudPlot from '$lib/components/RainCloudPlot.svelte';
 	import BarChart from '$lib/components/BarChart.svelte';
 	import * as d3 from 'd3';
 	import ColorLegend from '$lib/components/ColorLegend.svelte';
@@ -13,12 +14,11 @@
 	// default features to visualize
 	let xFeature = $state('strikeout');
 	let yFeature = $state('hit');
-	let colorFeature = $state('position');
+	let colorFeature = $state('all_star');
 
 	let highlightedPlayer = $state(null);
 
 	function onChangeHighlightedPlayer(value) {
-		console.log('hovering over', value);
 		highlightedPlayer = value;
 	}
 
@@ -30,6 +30,13 @@
 	let width = $state(400);
 	let height = $state(400);
 	const size = $derived(Math.min(width, height));
+
+	let filteredDataset = $state([]);
+
+	// callback function that will update filteredDataset on brushing
+	function onbrush(brushedDataPoints) {
+		filteredDataset = brushedDataPoints;
+	}
 
 	const categories = $derived(
 		d3
@@ -59,7 +66,7 @@
 	</div>
 	<div class="main">
 		<div class="player-list">
-			<PlayerList dataset={data.dataset} onHoverPlayer={onChangeHighlightedPlayer} />
+			<PlayerList dataset={filteredDataset} onHoverPlayer={onChangeHighlightedPlayer} />
 		</div>
 
 		<div class="scatter-plot" bind:clientWidth={width} bind:clientHeight={height}>
@@ -76,12 +83,13 @@
 				{colorFeature}
 				{color}
 				{highlightedPlayer}
+				{onbrush}
 			/>
 		</div>
 
 		<div class="bar-chart">
 			<BarChart
-				dataset={data.dataset}
+				dataset={filteredDataset}
 				width={size}
 				height={size}
 				marginLeft={64}
@@ -89,6 +97,21 @@
 				marginTop={32}
 				marginRight={32}
 				feature={colorFeature}
+				{color}
+			/>
+		</div>
+
+		<div class="raincloud-plot">
+			<RainCloudPlot
+				dataset={data.dataset}
+				width={size}
+				height={size}
+				marginLeft={64}
+				marginBottom={64}
+				marginTop={32}
+				marginRight={32}
+				{xFeature}
+				{colorFeature}
 				{color}
 			/>
 		</div>
@@ -125,7 +148,8 @@
 	}
 
 	.bar-chart,
-	.scatter-plot {
+	.scatter-plot,
+	.raincloud-plot {
 		/* take up the extra horizontal space of main */
 		flex: 1;
 		/* be as tall as main */

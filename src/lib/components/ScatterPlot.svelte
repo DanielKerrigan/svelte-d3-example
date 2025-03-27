@@ -14,7 +14,8 @@
 		yFeature,
 		colorFeature,
 		color,
-		highlightedPlayer
+		highlightedPlayer,
+		onbrush
 	} = $props();
 
 	const x = $derived(
@@ -32,12 +33,58 @@
 			.nice()
 			.range([height - marginBottom, marginTop])
 	);
+
+	// brushing
+
+	let svg;
+	let brushedPlayerIDs = $state(null);
+
+	const brush = $derived(
+		d3
+			.brush()
+			.extent([
+				[marginLeft, marginTop],
+				[width - marginRight, height - marginBottom]
+			])
+			.on('start brush end', brushed)
+	);
+
+	function brushed(event) {
+		if (event.selection) {
+			const [[x0, y0], [x1, y1]] = event.selection;
+
+			const brushedDataPoints = dataset.filter((d) => {
+				const dx = x(d[xFeature]);
+				const dy = y(d[yFeature]);
+				return dx >= x0 && dx <= x1 && dy >= y0 && dy <= y1;
+			});
+
+			brushedPlayerIDs = brushedDataPoints.map((d) => d.player_id);
+			onbrush(brushedDataPoints);
+		} else {
+			brushedPlayerIDs = null;
+			onbrush(dataset);
+		}
+	}
+
+	$effect(() => {
+		xFeature;
+		yFeature;
+		d3.select(svg).call(brush).call(brush.clear);
+	});
 </script>
 
-<svg {width} {height}>
+<svg {width} {height} bind:this={svg}>
 	<g>
 		{#each dataset as d (d.player_id)}
-			<circle cx={x(d[xFeature])} cy={y(d[yFeature])} fill={color(d[colorFeature])} r={3} />
+			<circle
+				cx={x(d[xFeature])}
+				cy={y(d[yFeature])}
+				fill={brushedPlayerIDs === null || brushedPlayerIDs.includes(d.player_id)
+					? color(d[colorFeature])
+					: '#d3d3d3'}
+				r={3}
+			/>
 		{/each}
 
 		{#if highlightedPlayer}
